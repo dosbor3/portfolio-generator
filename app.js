@@ -1,11 +1,14 @@
+const fs = require('fs');
 const inquirer = require("inquirer");
+const generatePage = require("./src/page-template.js");
+
 
 const promptUser = () => {
   return inquirer.prompt([
     {
       type: 'input',
       name: 'name',
-      message: 'What is your name?',
+      message: 'What is your name? (Required)',
       validate: nameInput => {
         if (nameInput) {
           return true;
@@ -19,7 +22,15 @@ const promptUser = () => {
     {
       type: 'input',
       name: 'github',
-      message: 'Enter your GitHub username?'
+      message: 'Enter your GitHub username (Required): ',
+      validate: githubInput => {
+        if (githubInput) {
+          return true;
+        } else {
+          console.log('Please enter your GitHub username!');
+          return false;
+        }
+      }
     },
     /*
     One last step remains. Let's ask the user if they'd like to add an About section. Then we'll prompt the 
@@ -65,13 +76,7 @@ const promptUser = () => {
       type: 'input',
       name: 'about',
       message: 'Would you like to provide some information about yourself?',
-      when: ({ confirmAbout }) => {
-        if (confirmAbout) {
-          return true;
-        } else {
-          return false;
-        }
-      }
+      when: ({ confirmAbout }) => confirmAbout 
     }    
   ]);
 };
@@ -83,7 +88,7 @@ Add a New Project
 =================
 `);
 
-  //If ther's no "projects" array property, create one
+  //If there's no "projects" array property, create one
   if (!portfolioData.projects) {
     portfolioData.projects = [];
   }
@@ -108,8 +113,8 @@ Add a New Project
       type: 'input',
       name: 'description',
       message: 'Provide a description of the project (Required)',
-      validate: nameInput => {
-        if (nameInput) {
+      validate: descriptionInput => {
+        if (descriptionInput) {
           return true;
         }
         else {
@@ -128,12 +133,12 @@ Add a New Project
       type:"input",
       name: "link", 
       message: "Enter the GitHub link to your project.  (Required)",
-      validate: nameInput => {
-        if (nameInput) {
+      validate: linkInput => {
+        if (linkInput) {
           return true;
         }
         else {
-          console.log("Please enter your github  name!");
+          console.log("Please enter your github link to your project!");
           return false;
         }
       }
@@ -151,16 +156,28 @@ Add a New Project
       default: false
     }
   ])
+  .then(projectData => {
+    portfolioData.projects.push(projectData);
+      if (projectData.confirmAddProject) {
+        return promptProject(portfolioData);
+      } else {
+        return portfolioData;
+      }
+  });
 };
 
-promptUser()  
+promptUser()
   .then(promptProject)
   .then(portfolioData => {
     console.log(portfolioData);
+  
+    // fs.writeFile('./index.html', pageHTML, err => {
+    //   if (err) throw new Error(err);
+
+    //   console.log('Page created! Check out index.html in this directory to see it!');
+    // });
   });
  
-// const fs = require('fs');
-// const generatePage = require("./src/page-template.js");
 
 // const pageHTML = generatePage(name, github);
 
