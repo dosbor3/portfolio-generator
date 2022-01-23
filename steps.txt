@@ -1,0 +1,13 @@
+1. Install Node.js on your computer. (This should be done once)
+    a.  npm, (Node Package Manager), is the default package Manager 
+        for Node.js.  It is distributed with Node.js, which means 
+        that when you download Node.js, npm is automatically installed 
+        on your computer!
+    b.  You will use npm from the command line to add Node.js packages 
+        (such as inquirer) to your applications.
+
+2.  
+
+3.  Download inquirer from the npm
+
+4.  Use inquirer to create questions to be displayed on the CL to the user
