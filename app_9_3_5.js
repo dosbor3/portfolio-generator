@@ -1,59 +1,150 @@
-const fs = require('fs');
-const generatePage = require("./src/page-template.js");
+const inquirer = require("inquirer");
 
-/*
-When you run the app, you should see an array of just your name and occupation. 
-This is because you used the array method .slice() to return a brand-new array 
-based on process.argv starting at the third index (i.e., index 2 in the zero-based array), 
-and ending with the final index.
+const promptUser = () => {
+  return inquirer.prompt([
+    {
+      type: 'input',
+      name: 'name',
+      message: 'What is your name?'
+    },
+    {
+      type: 'input',
+      name: 'github',
+      message: 'Enter your GitHub username?'
+    },
+    {
+      type: 'input',
+      name: 'about',
+      message: 'Provide some information about yourself?'
+    },
+    {
+      type: 'input',
+      name: 'name',
+      message: 'What is your name?'
+    }
+  ]);
+};
+//promptUser().then(answers => console.log(answers));
+// Let's make the changes to the promptProject() function to add a parameter that will store the project data.
+// Go to the app.js file and add portfolioData to the following function expression:
+const promptProject = portfolioData => {
+  console.log(`
+=================
+Add a New Project
+=================
+`);
 
-But wait, if we want .slice() to return everything including the final index, why 
-don't we write process.argv.slice(2, process.argv.length - 1);? It turns out .slice() 
-returns everything from the first zero-based index we provide as the first argument up 
-to but not including the zero-based index we provide as the second argument. So, to 
-return through the last index in the array, we provide the length of the array as the 
-second argument.
+// Now let's add the array inside the promptProject() function, and initialize it as follows:
+//portfolioData.projects = [];
+/*Great! We just added the projects array to the portfolioData object and 
+initialized it as an empty array. However, this could be problematic if 
+the projects array is set to an empty array in every function call, because 
+this would essentially erase all the project data we collected. We want this 
+expression to occur on the first pass only.
 
-This way, you don't actually manipulate process.argv, but rather create a new array based 
-on the values from the third index and on.
-*/
-const profileDataArgs = process.argv.slice(2);
+What can we do to guarantee the array is initialized only on the first pass? We 
+can handle this by using an if statement to initialize projects only if the array 
+does not exist. Let's add the following control statement and replace that last 
+statement with the following one: */ 
 
-const [name, github] = profileDataArgs;
+//If ther's no "projects" array property, create one
+if (!portfolioData.projects) {
+  portfolioData.projects = [];
+}
 
+/*Great job! Now that you have the data collection system in place, it's time
+to focus on how to add another project. Once the data has been collected by 
+inquirer, you need to add the project data to the projects array. Add a .then() 
+to the end of the inquirer.prompt() that's returned by promptProject(). Then add 
+the following code to the callback in the .then(), as shown here:  
 
-
-fs.writeFile('./index.html', generatePage(name, github), err => {
-  if (err) throw new Error(err);
-
-  console.log('Portfolio complete! Check out index.html to see the output!');
+.then(projectData => {
+  portfolioData.projects.push(projectData);
 });
 
+*/  
+  return inquirer.prompt([
+    {
+      type:"input",
+      name: "name", 
+      message: "What is the name of your project? "
+    },
+    {
+      type: 'input',
+      name: 'description',
+      message: 'Provide a description of the project (Required)'
+    },
+    {
+      type:"checkbox",
+      name: "languages", 
+      message: "What did you build this project with? (Check all that apply)",
+      choices: ["JavaScript", "HTML", "CSS", "ES6", "JQuery", "Bootstrap"]
+    },
+    {
+      type:"input",
+      name: "link", 
+      message: "Enter the GitHub link to your project.  (Required)"
+    },
+    {
+      type: 'confirm',
+      name: 'feature',
+      message: 'Would you like to feature this project?',
+      default: false
+    },
+    {
+      type: 'confirm',
+      name: 'confirmAddProject',
+      message: 'Would you like to enter another project?',
+      default: false
+    }
+  ])
+  
+};
 
-/*
-As you can see, the majority of the code in this file is in the string template. To follow a basic principle of coding, 
-always try to limit the functions and files to a single responsibility. For example, take the app.js file, where the 
-application executes functions to capture user input and create a file. The generatePage() function, which creates the 
-template literal, is out of place and adds bloat to the app.js.
-
-We can clean up this file using Node.js's modular system. To do so, we'll remove the generatePage() function from the 
-app.js file. Create a new folder called src and place it in the root directory of the project. Inside this folder, create 
-a file called page-template.js.
 
 
-You did a great job creating a CLI application! You're one step further along on your journey to mastering the Node.js environment 
-and modular system. You also encountered some key ES6 goodies to help you grow as a developer. And you probably understand why a 
-majority of JavaScript developers have adopted ES6 into their tech stack!
+/*In the preceding expression, we use the array method push() to place the projectData 
+from inquirer into the new projects array we just created.  
 
-In this lesson, you added the following skills to your skill set:
+At this point, we can evaluate whether the user wishes to add another project. Let's add 
+a condition that will call the promptProject(portfolioData) function when confirmAddProject 
+evaluates to true.
 
-Using ES6 arrow functions and assignment destructuring to write cleaner code.
+Add the following condition after the array .push() in the .then() callback: ---> This is added after line 101 above...
 
-Researching documentation to learn how to use new tools like the core library in Node.js.
+.then(projectData => {
+  portfolioData.projects.push(projectData);
+  if (projectData.confirmAddProject) {
+    return promptProject(portfolioData);
+  } else {
+    return portfolioData;
+  }
+});
 
-Requiring and exporting modules to use Node.js's core library and modularize the application.
-
-Although it has been successfully generated, the portfolio page is still incomplete. To make it more robust and descriptive, 
-we'll need to change how we're capturing user input. Let's bring in some reinforcements in the next lesson and explore using 
-open source third-party modules to expand the page.
 */
+
+
+
+promptUser()  
+  .then(promptProject)
+  .then(portfolioData => {
+    console.log(portfolioData);
+  });
+ 
+// const fs = require('fs');
+// const generatePage = require("./src/page-template.js");
+
+// const pageHTML = generatePage(name, github);
+
+
+// const [name, github] = profileDataArgs;
+
+
+
+// fs.writeFile('./index.html', pageHTML, err => {
+//   if (err) throw new Error(err);
+
+//   console.log('Portfolio complete! Check out index.html to see the output!');
+// });
+
+

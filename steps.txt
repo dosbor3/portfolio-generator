@@ -11,3 +11,27 @@
 3.  Download inquirer from the npm
 
 4.  Use inquirer to create questions to be displayed on the CL to the user
+
+
+
+
+
+How to migrate functions from ES5 to ES6.
+// Before
+let bunny = function(name) {
+  console.log("Usagi");
+}
+
+// After
+let bunny = (name) => console.log("Usagi")
+
+// Step 1: Remove the word ‘function’.
+let bunny = (name) {
+  console.log("Usagi");
+}
+
+// Step 2: If your code is less than a line, remove brackets and place on one line.
+let bunny = (name) console.log("Usagi");
+
+// Step 3. Add the hash rocket.
+let bunny = (name) => console.log("Usagi");git 
